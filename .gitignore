@@ -1,0 +1,46 @@
+# C++ / CMake / Conan
+/build/
+*.cmake/
+*.conan/
+*.conaninfo
+*.conanbuildinfo
+conanbuildinfo.txt
+conanbuildinfo.cmake
+conanbuildinfo_multi.cmake
+conanbuildinfo.bat
+conanbuildinfo.sh
+
+# IDEs / Editors
+.idea/             # JetBrains IDEs (CLion, etc.)
+.vscode/           # VS Code
+*.iml              # IntelliJ IDEA module file
+*.user             # Visual Studio (user-specific files)
+*.suo              # Visual Studio (solution user options)
+*.vcproj.filters   # Visual Studio (filters for solution explorer)
+*.vcxproj.user     # Visual Studio (user-specific project settings)
+
+# Build artifacts
+*.obj              # Object files
+*.lib              # Libraries
+*.dll              # Dynamic-link libraries
+*.exe              # Executables
+*.o                # Object files (Linux/macOS)
+*.so               # Shared objects (Linux/macOS)
+*.a                # Static libraries (Linux/macOS)
+
+# Python
+__pycache__/       # Python compiled bytecode
+*.pyc              # Python compiled bytecode
+.venv/             # Python virtual environments (if created at root)
+venv/              # Python virtual environments
+*.egg-info/        # Python egg info
+.pytest_cache/     # Pytest cache directory
+.ipynb_checkpoints/ # Jupyter notebooks checkpoints
+
+# Operating System Files
+.DS_Store          # macOS specific
+Thumbs.db          # Windows specific
+Desktop.ini        # Windows specific
+
+# Visual Studio project dir
+.project/

@@ -1,0 +1,54 @@
+name: C++ CI Build and Run Examples (Conan - Release Only)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  build_and_run:
+    runs-on: ubuntu-latest 
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4 
+
+    - name: Set up Conan
+      uses: conan-io/setup-conan@v1
+      
+    - name: Create build directory
+      run: mkdir build 
+
+    - name: Run Conan install for Release configuration
+      working-directory: build
+      run: |
+        echo "Running Conan install for Release configuration..."
+        conan install .. --build=missing -s build_type=Release -g cmake_multi
+      
+
+    - name: Configure CMake
+      working-directory: build 
+      run: cmake .. 
+  
+
+    - name: Build Release configuration
+      working-directory: build 
+      run: cmake --build . --config Release
+ 
+
+    - name: Run example_lamda_and_function (Release)
+      working-directory: build/Release
+      run: ./example_lamda_and_function
+
+    - name: Run example_member_function (Release)
+      working-directory: build/Release
+      run: ./example_member_function
+    
+    - name: Run example_user_type (Release)
+      working-directory: build/Release
+      run: ./example_user_type
