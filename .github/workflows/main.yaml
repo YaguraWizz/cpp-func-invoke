@@ -31,7 +31,7 @@ jobs:
       working-directory: build
       run: |
         echo "Running Conan install for Release configuration..."
-        conan install .. --build=missing -s build_type=Release -g cmake
+        conan install .. --build=missing -s build_type=Release -g cmake -s compiler.version=12
 
     - name: Configure CMake
       working-directory: build
