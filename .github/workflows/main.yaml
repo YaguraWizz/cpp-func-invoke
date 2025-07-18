@@ -42,13 +42,13 @@ jobs:
       run: cmake --build .
 
     - name: Run example_lamda_and_function
-      working-directory: build/bin
+      working-directory: build/bin/Release
       run: ./example_lamda_and_function
 
     - name: Run example_member_function
-      working-directory: build/bin
+      working-directory: build/bin/Release
       run: ./example_member_function
 
     - name: Run example_user_type
-      working-directory: build/bin
+      working-directory: build/bin/Release
       run: ./example_user_type
