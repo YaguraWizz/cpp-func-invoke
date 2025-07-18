@@ -33,7 +33,7 @@ for %%C in (%CONFIGS%) do (
 REM --- Шаг 2: Генерация проекта CMake (один раз) ---
 echo.
 echo Running CMake to generate project files...
-cmake %SRC_DIR% 
+cmake %SRC_DIR% -DBUILD_TESTS=ON
 if errorlevel 1 (
     echo Error during CMake generation. Check the output above.
     pause
