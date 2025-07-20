@@ -41,14 +41,10 @@ jobs:
       working-directory: build
       run: cmake --build .
 
-    - name: Run example_lamda_and_function
+    - name: Run func_invoke_cpp17
       working-directory: build/bin/Release
-      run: ./example_lamda_and_function
+      run: ./func_invoke_cpp17
 
-    - name: Run example_member_function
+    - name: Run func_invoke_cpp20
       working-directory: build/bin/Release
-      run: ./example_member_function
-
-    - name: Run example_user_type
-      working-directory: build/bin/Release
-      run: ./example_user_type
+      run: ./func_invoke_cpp20
