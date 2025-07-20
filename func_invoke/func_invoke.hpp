@@ -5,6 +5,18 @@
 #include <type_traits>
 #include <string_view>
 
+#if defined(_MSVC_LANG)
+#if _MSVC_LANG >= 202002L
+    #define HAS_CXX20 1
+#else
+    #define HAS_CXX20 0
+#endif
+#elif __cplusplus >= 202002L
+    #define HAS_CXX20 1
+#else
+    #define HAS_CXX20 0
+#endif
+
 namespace func_invoke {
     namespace traits {
         template <typename T>
@@ -53,7 +65,7 @@ namespace func_invoke {
         constexpr explicit KeyArg(std::string_view _key) : key(_key) {}
     };
 
-#if _HAS_CXX20
+#if HAS_CXX20
     template <std::size_t N>
     struct fixed_string {
         char value[N];
@@ -99,6 +111,9 @@ namespace func_invoke {
         // Частичная специализация для Value<>
         template <fixed_string Key, typename U>
         struct is_value_type<Value<Key, U>> : std::true_type {};
+
+        template <typename T>
+        constexpr bool is_non_value_type_v = !is_value_type<T>::value;
     }
 #endif
 
@@ -107,17 +122,19 @@ namespace func_invoke {
     namespace detail {
         using namespace traits;
 
-        template <typename... Ts>
-        struct count_non_value_types;
-
-        template <>
-        struct count_non_value_types<> {
-            static constexpr size_t value = 0;
-        };
-
-        template <typename T, typename... Ts>
-        struct count_non_value_types<T, Ts...> {
-            static constexpr size_t value = (!is_value_type<T>::value ? 1 : 0) + count_non_value_types<Ts...>::value;
+        template <typename... ExpectedArgs>
+        struct ArgumentCounter {
+            template <typename... ProvidedArgs>
+            static constexpr void validate_args() {
+#if HAS_CXX20
+                constexpr size_t needed_args = (is_non_value_type_v<ExpectedArgs> + ... + 0);
+                static_assert(sizeof...(ProvidedArgs) == needed_args,
+                            "Mismatch between provided arguments and expected non-value_type arguments (C++20 mode)");
+#else
+                static_assert(sizeof...(ProvidedArgs) == sizeof...(ExpectedArgs),
+                            "Mismatch between expected types and argument count (Non-C++20 mode)");
+#endif
+            }
         };
 
 
@@ -131,7 +148,7 @@ namespace func_invoke {
         // Выбор аргумента в зависимости от его типа
         template <typename Expected, typename Container, typename Arg>
         auto select_arg(const Container& c, Arg&& a) {
-#if _HAS_CXX20
+#if HAS_CXX20
             if constexpr (is_value_type<Expected>::value) {
                 using value_type = typename Expected::value_type;
                 return extract_value_impl<value_type>(c, Expected::key());
@@ -153,14 +170,16 @@ namespace func_invoke {
             }
             else {
                 using ExpectedType = std::tuple_element_t<I, TupleExpected>;
-
+#if HAS_CXX20
                 if constexpr (is_value_type<ExpectedType>::value) {
                     // We only use ExpectedType to extract the value
                     auto val = select_arg<ExpectedType>(c, 0); 
                     return build_arg_tuple_recursive<I + 1, J>(c, expected, std::forward<TupleArgs>(args_tuple),
                         std::forward<Accumulated>(acc)..., std::move(val));
                 }
-                else {
+                else 
+#endif
+                {
                     // We get the argument from args_tuple at the index J
                     auto&& arg = std::get<J>(std::forward<TupleArgs>(args_tuple));
                     auto val = select_arg<ExpectedType>(c, std::forward<decltype(arg)>(arg));
@@ -173,20 +192,11 @@ namespace func_invoke {
 
         template <typename Container, typename... Expected, typename... Args>
         auto build_arg_tuple(const Container& c, const std::tuple<Expected...>& expected, Args&&... args) {
-#if _HAS_CXX20
-            constexpr size_t needed_args = count_non_value_types<Expected...>::value;
-            static_assert(sizeof...(Args) == needed_args, "Mismatch between provided arguments and expected non-value_type arguments");
-#else
-            static_assert(sizeof...(Args) == sizeof...(Expected), "Mismatch between expected types and argument count");
-#endif
+            ArgumentCounter<Expected...>::template validate_args<Args...>();
 
             auto args_tuple = std::forward_as_tuple(std::forward<Args>(args)...);
             return build_arg_tuple_recursive<0, 0>(c, expected, std::move(args_tuple));
         }
-
-
-       
-
 
     } // namespace detail
 

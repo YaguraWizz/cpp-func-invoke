@@ -1,7 +1,12 @@
-file(GLOB EXAMPLE_SOURCES "*.cpp")
+set(EXAMPLES_SOURCE_FILE "examples.cpp")
 
-foreach(example_file ${EXAMPLE_SOURCES})
-    get_filename_component(example_name ${example_file} NAME_WE)
-    add_executable(${example_name} ${example_file})
-    target_link_libraries(${example_name} PRIVATE CONAN_PKG::nlohmann_json)
-endforeach()
+# Executable file for C++17
+add_executable(func_invoke_cpp17 ${EXAMPLES_SOURCE_FILE})
+target_link_libraries(func_invoke_cpp17 PRIVATE CONAN_PKG::nlohmann_json)
+
+
+# Executable file for C++20
+add_executable(func_invoke_cpp20 ${EXAMPLES_SOURCE_FILE})
+target_compile_features(func_invoke_cpp20 PRIVATE cxx_std_20) 
+target_link_libraries(func_invoke_cpp20 PRIVATE CONAN_PKG::nlohmann_json)
+

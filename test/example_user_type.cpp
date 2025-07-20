@@ -55,7 +55,7 @@ static void display_user_profile(app_types::UserProfile profile, bool active, co
 }
 
 
-
+#if HAS_CXX20
 static void func(func_invoke::Value<"id", int> idx, std::string name, int& code) {
     std::cout << "--- Value Test ---\n";
     std::cout << "ID: " << idx.data() << "\n";
@@ -64,12 +64,11 @@ static void func(func_invoke::Value<"id", int> idx, std::string name, int& code)
 
     code = 20;
 }
-
-
+#endif
 
 int main() {
     using namespace func_invoke;
-
+#if HAS_CXX20
     js::json maps {
       {"id", 1 },
       {"name", "Ivan"},
@@ -84,6 +83,8 @@ int main() {
     catch (const std::exception& ex) {
         std::cerr << "Error: " << ex.what() << std::endl;
     }
+#endif
+
 
     js::json user_data_json = {
         {"user_profile_data", {

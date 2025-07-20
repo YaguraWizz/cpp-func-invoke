@@ -5,6 +5,7 @@ REM --------- Настройки ---------
 set BUILD_DIR=.project
 set SRC_DIR=..
 set CONFIGS=Debug Release
+set SOLUTION_NAME=func_invoke.sln
 REM ------------------------------
 
 REM Создаём каталог сборки, если его нет
@@ -54,6 +55,14 @@ for %%C in (%CONFIGS%) do (
 
 echo.
 echo Build completed successfully for all configurations!
+
+REM --- Шаг 4: Запуск файла решения Visual Studio ---
+echo.
+echo Opening Visual Studio solution: %SOLUTION_NAME%
+start "" "%SOLUTION_NAME%"
+if errorlevel 1 (
+    echo Error opening Visual Studio solution. Make sure Visual Studio is installed and associated with .sln files.
+)
 
 pause
 endlocal
