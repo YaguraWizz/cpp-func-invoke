@@ -54,8 +54,36 @@ static void display_user_profile(app_types::UserProfile profile, bool active, co
     std::cout << "Status: " << status << "\n";
 }
 
+
+
+static void func(func_invoke::Value<"id", int> idx, std::string name, int& code) {
+    std::cout << "--- Value Test ---\n";
+    std::cout << "ID: " << idx.data() << "\n";
+    std::cout << "Name: " << name << "\n";
+    std::cout << "Code: " << code << "\n";
+
+    code = 20;
+}
+
+
+
 int main() {
     using namespace func_invoke;
+
+    js::json maps {
+      {"id", 1 },
+      {"name", "Ivan"},
+    };
+    
+    try {
+        int code = 10;
+        invoke(maps, func, KeyArg("name"), code);
+
+        std::cout << "Update Code: " << code << "\n";
+    }
+    catch (const std::exception& ex) {
+        std::cerr << "Error: " << ex.what() << std::endl;
+    }
 
     js::json user_data_json = {
         {"user_profile_data", {
